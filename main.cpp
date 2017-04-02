@@ -5,6 +5,7 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <ctime>
 
 using namespace std;
 
@@ -519,15 +520,61 @@ int task9()
     return 0;
 }
 
-int task10()
+void XOR(wchar_t prev, int a, int c)
 {
+    while(!wcin.eof())
+    {
+        wstring s;
+        getline(wcin, s);
+        for(int i = 0; i < s.size(); i++)
+        {
+            wchar_t tmp = s[i] ^prev;
+            wcout << tmp;
+            prev = alf[(a * dict[prev] + c) % alf.size()];
+        }
+        if(!wcin.eof())
+        {
+            wchar_t tmp = '\n' ^prev;
+            wcout << tmp;
+            prev = alf[(a * dict[prev] + c) % alf.size()];
+        }
+    }
+}
+
+int task12()
+{
+    printf("Enter the language (eng/rus):\n");
+    string lang;
+    cin >> lang;
+    if(lang == "eng")
+        make_alf_eng();
+    else
+        make_alf_rus();
+    printf("Enter the action (code/decode):\n");
+    cin >> lang;
+    printf("Enter A and C:\n");
+    int a, c;
+    scanf("%d %d", &a, &c);
+    srand(clock());
+    int k = rand() % alf.size();
+    if(lang == "code")
+        printf("Seed = %d\n", k);
+    else
+    {
+        printf("Enter the seed:\n");
+        scanf("%d", &k);
+    }
+    wcin.clear();
+    freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
+    XOR(alf[k], a, c);
     return 0;
 }
 
 int main()
 {
     locale::global(locale(""));
-    printf("Enter the task (1-9):\n");
+    printf("Enter the task (1-9, 12):\n");
     int k;
     scanf("%d", &k);
     switch(k)
@@ -550,6 +597,8 @@ int main()
             return task8();
         case 9:
             return task9();
+        case 12:
+            return task12();
         default:
             return 0;
     }
