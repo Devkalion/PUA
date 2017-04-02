@@ -519,6 +519,11 @@ int task9()
     return 0;
 }
 
+int task10()
+{
+
+}
+
 int main()
 {
     locale::global(locale(""));
