@@ -521,7 +521,7 @@ int task9()
 
 int task10()
 {
-
+    return 0;
 }
 
 int main()
