@@ -394,23 +394,34 @@ int task7()
     freopen("in", "r", stdin);
     wcin.clear();
     set<wchar_t> st;
-    map<wchar_t, wchar_t> dir, updir;
     for(int i = 0; i < s.size(); i++)
         st.insert(s[i]);
-    if(st.size() < alf.size())
+    if(st.size() < alf.size() / 2)
         return !(cout << "Incorrect code phrase");
-    int j = 0;
-    for(auto it = st.begin(); it != st.end(); it++)
+    vector<wchar_t> code_symbols;
+    vector<wchar_t> not_code_symbols;
+    for(int i = 0; i < alf.size(); i++)
     {
-        wchar_t tmp;
-        for(; j < st.size() && st.find(alf[j]) != st.end(); j++);
-        if(j == alf.size())
-            break;
+        if(st.find(alf[i]) != st.end())
+            code_symbols.push_back(alf[i]);
         else
-            tmp = alf[j++];
-        dir[*it] = tmp;
-        updir[tmp] = *it;
+            not_code_symbols.push_back(alf[i]);
     }
+    while(code_symbols.size() - 1 > not_code_symbols.size())
+    {
+        not_code_symbols.push_back(code_symbols[code_symbols.size() - 1]);
+        code_symbols.pop_back();
+    }
+    map<wchar_t, wchar_t> dir, updir;
+    for(int i = 0; i < not_code_symbols.size(); i++)
+    {
+        dir[code_symbols[i]] = not_code_symbols[i];
+        updir[not_code_symbols[i]] = code_symbols[i];
+    }
+    if(code_symbols.size() > not_code_symbols.size())
+        dir[code_symbols.size() - 1] = updir[code_symbols.size() - 1] = code_symbols[code_symbols.size() - 1];
+    code_symbols.clear();
+    not_code_symbols.clear();
     freopen("out", "w", stdout);
     if(lang == "code")
         code_pair(dir);
