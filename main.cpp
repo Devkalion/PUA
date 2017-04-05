@@ -367,8 +367,7 @@ void code_pair(map<wchar_t, wchar_t> d)
         getline(wcin, s);
         for(int i = 0; i < s.size(); i++)
         {
-            auto it = d.find(s[i]);
-            if(it == d.end())
+            if(d.find(s[i]) == d.end())
                 wcout << s[i];
             else
                 wcout << d[s[i]];
@@ -419,7 +418,10 @@ int task7()
         updir[not_code_symbols[i]] = code_symbols[i];
     }
     if(code_symbols.size() > not_code_symbols.size())
-        dir[code_symbols.size() - 1] = updir[code_symbols.size() - 1] = code_symbols[code_symbols.size() - 1];
+    {
+        wchar_t tmp = code_symbols[code_symbols.size() - 1];
+        dir[tmp] = updir[tmp] = tmp;
+    }
     code_symbols.clear();
     not_code_symbols.clear();
     freopen("out", "w", stdout);
