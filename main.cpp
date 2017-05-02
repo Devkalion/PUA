@@ -33,6 +33,7 @@ void code_caesar(int n, int k)
         getline(wcin, s);
         for(int i = 0; i < s.size(); i++)
             wcout << alf[(dict[s[i]] * n + k) % alf.size()];
+        wcout << "\n";
     }
 }
 
@@ -50,6 +51,7 @@ void decode_caesar(int n, int k)
                 t++;
             wcout << alf[(B + t * alf.size() - k) / n % alf.size()];
         }
+        wcout << "\n";
     }
 }
 
@@ -135,9 +137,9 @@ int task2()
         {
             wchar_t c = s[i];
             if(c >= L'A' && c <= L'Z')
-                c -= L'A' + L'a';
+                c = wchar_t(int(c) - int(L'A') + int(L'a'));
             if(c >= L'А' && c <= L'Я')
-                c -= L'А' + L'а';
+                c = wchar_t(int(c) - int(L'А') + int(L'а'));
             a[c]++;
             k++;
         }
@@ -157,19 +159,18 @@ int task3()
     {
         wstring s;
         getline(wcin, s);
-        for(int i = 0; i < s.size() - 1; i++)
+        for(int i = 0; i < int(s.size()) - 1; i++)
         {
             wchar_t c = s[i];
             if(c >= L'A' && c <= L'Z')
-                c -= L'A' + L'a';
+                c = wchar_t(int(c) - int(L'A') + int(L'a'));
             if(c >= L'А' && c <= L'Я')
-                c -= L'А' + L'а';
-
+                c = wchar_t(int(c) - int(L'А') + int(L'а'));
             wchar_t c2 = s[i + 1];
             if(c2 >= L'A' && c2 <= L'Z')
-                c2 -= L'A' + L'a';
+                c2 = wchar_t(int(c2) - int(L'A') + int(L'a'));
             if(c2 >= L'А' && c2 <= L'Я')
-                c2 -= L'А' + L'а';
+                c2 = wchar_t(int(c2) - int(L'А') + int(L'а'));
             a[make_pair(c, c2)]++;
             k++;
         }
@@ -187,14 +188,34 @@ void code_polib(vector<vector<wchar_t >> &m, map<wchar_t, pair<int, int >> &a)
         getline(wcin, s);
         for(int i = 0; i < s.size(); i++)
             printf("%d%d", a[s[i]].first, a[s[i]].second);
+        printf("\n");
     }
 }
 
 void decode_polib(vector<vector<wchar_t >> &m, map<wchar_t, pair<int, int >> &a)
 {
-    wchar_t b, c;
-    while(wcin >> b && wcin >> c)
-        wcout << m[b - '0'][c - '0'];
+    int prev = -1;
+    while(!wcin.eof())
+    {
+        wstring s;
+        getline(wcin, s);
+        for(int i = 0; i < s.size(); i++)
+        {
+            if(s[i] != ' ')
+            {
+                int k = 0;
+                while(s[i] != ' ')
+                {
+                    k = k * 10 + (s[i] - L'0');
+                    i++;
+                }
+                if(prev != -1)
+                    wcout << m[prev][k];
+                prev = k;
+            }
+        }
+        wcout << "\n";
+    }
 }
 
 int task4()
@@ -241,7 +262,7 @@ void code_vijin(const vector<vector<wchar_t>> &m)
                 j = 0;
             wcout << m[j][dict[s[i]]];
         }
-        printf("\n");
+        wcout << L"\n";
     }
 }
 
@@ -262,7 +283,7 @@ void decode_vijin(const vector<vector<wchar_t>> &m)
                     k = p;
             wcout << alf[k];
         }
-        printf("\n");
+        wcout << L"\n";
     }
 }
 
@@ -312,7 +333,7 @@ void code_Keycaesar(wstring code)
             int k = (dict[code[j]] + dict[s[i]]) % n;
             wcout << alf[k];
         }
-        printf("\n");
+        wcout << L"\n";
     }
 }
 
@@ -331,7 +352,7 @@ void decode_Keycaesar(wstring code)
             int k = (n - dict[code[j]] + dict[s[i]]) % n;
             wcout << alf[k];
         }
-        printf("\n");
+        wcout << L"\n";
     }
 }
 
@@ -366,13 +387,8 @@ void code_pair(map<wchar_t, wchar_t> d)
         wstring s;
         getline(wcin, s);
         for(int i = 0; i < s.size(); i++)
-        {
-            if(d.find(s[i]) == d.end())
-                wcout << s[i];
-            else
-                wcout << d[s[i]];
-        }
-        printf("\n");
+            wcout << d[s[i]];
+        wcout << L"\n";
     }
 }
 
@@ -411,24 +427,21 @@ int task7()
         not_code_symbols.push_back(code_symbols[code_symbols.size() - 1]);
         code_symbols.pop_back();
     }
-    map<wchar_t, wchar_t> dir, updir;
+    map<wchar_t, wchar_t> dir;
     for(int i = 0; i < not_code_symbols.size(); i++)
     {
         dir[code_symbols[i]] = not_code_symbols[i];
-        updir[not_code_symbols[i]] = code_symbols[i];
+        dir[not_code_symbols[i]] = code_symbols[i];
     }
     if(code_symbols.size() > not_code_symbols.size())
     {
         wchar_t tmp = code_symbols[code_symbols.size() - 1];
-        dir[tmp] = updir[tmp] = tmp;
+        dir[tmp] = tmp;
     }
     code_symbols.clear();
     not_code_symbols.clear();
     freopen("out", "w", stdout);
-    if(lang == "code")
-        code_pair(dir);
-    else
-        code_pair(updir);
+    code_pair(dir);
     return 0;
 }
 
@@ -533,6 +546,99 @@ int task9()
     return 0;
 }
 
+void code_k(wstring code, int k)
+{
+    int j = 0;
+    while(!wcin.eof())
+    {
+        wstring s;
+        getline(wcin, s);
+        for(int i = 0; i < s.size(); i++)
+        {
+            int c = s[i] + code[j];
+            int val = 0;
+            int p = 1;
+            wstring s1 = L"";
+            while(c > 0)
+            {
+                int r = c % k;
+                s1 = s1 + wchar_t(r + 32);
+                c = c / k;
+            }
+            wcout << s1 << " ";
+            j = (j + 1) % code.size();
+        }
+        if(!wcin.eof())
+        {
+            wchar_t c = '\n' ^code[j];
+            wcout << c;
+            j = (j + 1) % code.size();
+        }
+    }
+
+}
+
+int task10()
+{
+    printf("Enter the language (eng/rus):\n");
+    string lang;
+    cin >> lang;
+    if(lang == "eng")
+        make_alf_eng();
+    else
+        make_alf_rus();
+    printf("Enter the action (code/decode):\n");
+    cin >> lang;
+    freopen("code", "r", stdin);
+    wstring s;
+    getline(wcin, s);
+    freopen("in", "r", stdin);
+    wcin.clear();
+    freopen("out", "w", stdout);
+    if(lang == "code")
+        XOR(s);
+    else
+        XOR(s);
+    return 0;
+
+}
+
+wstring gen(wstring s)
+{
+    wstring ans = L"";
+    for(int i = 0; i < s.size(); i++)
+    {
+        unsigned int gamma = 0;
+        unsigned int k = s[i];
+        for(int j = 0; j < 105; j++)
+        {
+            int c = k % 2;
+            gamma = gamma * 2 + c;
+            k = k >> 1;
+            c = (c + k) % 2;
+            k += 1024 * 1024 * 1024 * c;
+        }
+        ans += wchar_t(gamma);
+    }
+    return ans;
+}
+
+int task11()
+{
+    string lang;
+    printf("Enter the action (code/decode):\n");
+    cin >> lang;
+    freopen("code", "r", stdin);
+    wstring s;
+    getline(wcin, s);
+    s = gen(s);
+    freopen("in", "r", stdin);
+    wcin.clear();
+    freopen("out", "w", stdout);
+    XOR(s);
+    return 0;
+}
+
 void XOR(wchar_t prev, int a, int c)
 {
     while(!wcin.eof())
@@ -610,6 +716,8 @@ int main()
             return task8();
         case 9:
             return task9();
+        case 11:
+            return task11();
         case 12:
             return task12();
         default:
